@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 4,
-  "latestVersionName": "1.0.3",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.3/smart-kitchen-v1.0.3.apk",
-  "changelog": "- Tách biểu đồ: chạm vào 1 cảm biến mới hiện biểu đồ của chỉ số đó.\n- Biểu đồ hiển thị giá trị đo thật (°C / % / ppm), không còn quy về %.",
+  "latestVersionCode": 5,
+  "latestVersionName": "1.0.4",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.4/smart-kitchen-v1.0.4.apk",
+  "changelog": "- Thiết kế lại toàn bộ giao diện theo phong cách Velzon Material (nền sáng, nhấn tím, card phẳng).\n- Mặc định giao diện Sáng; vẫn có nút chuyển Tự động / Sáng / Tối ở tab Cài đặt.",
   "minSupportedVersionCode": 1
 }
