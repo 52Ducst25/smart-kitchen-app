@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
@@ -15,6 +16,15 @@ Future<KitchenDataSource> createKitchenSource() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+    // Đăng nhập ẩn danh (best-effort) để RTDB rules "auth != null" chấp nhận app.
+    // Nếu Anonymous auth chưa bật ở Console → bỏ qua, app vẫn dùng dữ liệu thật
+    // trong lúc rules còn mở (giữ app không chết suốt quá trình siết bảo mật).
+    // BẮT BUỘC bật Anonymous auth TRƯỚC khi khoá rules (xem docs bảo mật).
+    try {
+      if (FirebaseAuth.instance.currentUser == null) {
+        await FirebaseAuth.instance.signInAnonymously();
+      }
+    } catch (_) {}
     return FirebaseKitchenSource();
   } catch (_) {
     return DemoKitchenSource();

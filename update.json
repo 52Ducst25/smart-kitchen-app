@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 8,
-  "latestVersionName": "1.0.7",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.7/smart-kitchen-v1.0.7.apk",
-  "changelog": "- Sửa lỗi phải bấm Cập nhật 2 lần: bật quyền cài xong app tự tiếp tục tải & cài (chỉ 1 lần bấm).",
+  "latestVersionCode": 9,
+  "latestVersionName": "1.0.8",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.8/smart-kitchen-v1.0.8.apk",
+  "changelog": "- Bảo mật: app đăng nhập ẩn danh Firebase để chuẩn bị khoá quyền truy cập RTDB.\n- (Kèm các bước bảo mật phía Console/firmware theo hướng dẫn của nhà phát triển.)",
   "minSupportedVersionCode": 1
 }
