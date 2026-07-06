@@ -8,33 +8,33 @@ import 'package:flutter/material.dart';
 class NcColors {
   NcColors._();
 
-  // --- Carbon scale (nền) ---
-  static const carbon = Color(0xFF08090A); // nền gốc (body, card)
-  static const carbonUp = Color(0xFF0E1012); // nền hover (card raised)
-  static const carbonPanel = Color(0xFF0C0D0F); // panel / sidebar
-  static const carbonLine = Color(0xFF1A1D22); // border mặc định, gap grid
-  static const carbonLineBright = Color(0xFF252930); // border nổi hơn
+  // --- Bề mặt tối (Velzon Material Dark) ---
+  static const carbon = Color(0xFF1A1D21); // body-bg (nền trang)
+  static const carbonUp = Color(0xFF2A2D31); // tertiary-bg (hover/lớp trong)
+  static const carbonPanel = Color(0xFF212529); // secondary-bg (card/panel)
+  static const carbonLine = Color(0xFF32383E); // border-color
+  static const carbonLineBright = Color(0xFF3D444B); // border nổi hơn
 
-  // --- Cyan (nhấn thương hiệu) ---
-  static const cyan = Color(0xFF00F0FF); // nhấn chính, viền active, glow
-  static const cyanText = Color(0xFF7DF7FF); // chữ cyan dịu (số liệu)
-  static const cyanDim = Color(0x1F00F0FF); // ~.12 alpha (active bg, chip)
-  static const cyanGhost = Color(0x0A00F0FF); // ~.04 (row hover)
-  static const cyanGlow = Color(0x4D00F0FF); // ~.3 (box-shadow phát sáng)
+  // --- Nhấn thương hiệu (primary tím Velzon) ---
+  static const cyan = Color(0xFF4B38B3); // primary — nhấn chính, nút, active
+  static const cyanText = Color(0xFFCFC9EE); // link/số liệu (tím rất nhạt)
+  static const cyanDim = Color(0x264B38B3); // ~.15 nền soft (subtle)
+  static const cyanGhost = Color(0x0F4B38B3); // ~.06 row hover
+  static const cyanGlow = Color(0x334B38B3); // ~.2 (soft, hầu như không dùng)
 
   // --- Chữ & trạng thái ---
-  static const white = Color(0xFFE8ECF0); // chữ chính
-  static const whiteDim = Color(0xFF8A8F99); // chữ phụ, mô tả, nhãn
-  static const green = Color(0xFF00FF6A); // success / online / an toàn
-  static const red = Color(0xFFFF3B4E); // error / critical / nguy hiểm
-  static const amber = Color(0xFFFFB300); // warning / cần chú ý
+  static const white = Color(0xFFE9EBEE); // chữ chính / nhấn mạnh (emphasis)
+  static const whiteDim = Color(0xFF878A99); // secondary-color (muted)
+  static const green = Color(0xFF45CB85); // success
+  static const red = Color(0xFFF06548); // danger
+  static const amber = Color(0xFFFFBE0B); // warning
 
-  // --- Màu phân biệt theo chỉ số (mỗi thông số 1 màu, dễ đọc thẻ & biểu đồ) ---
-  static const mTemp = cyan; // Nhiệt độ — cyan
-  static const mHum = Color(0xFF4D96FF); // Độ ẩm — xanh dương
-  static const mGas = amber; // Khí gas — hổ phách
-  static const mSmoke = Color(0xFFB388FF); // Khói — tím
-  static const mFlame = green; // Lửa — xanh lá (an toàn)
+  // --- Màu phân biệt theo chỉ số (palette Velzon, dễ đọc trên nền tối) ---
+  static const mTemp = Color(0xFFF06548); // Nhiệt độ — coral
+  static const mHum = Color(0xFF299CDB); // Độ ẩm — info blue
+  static const mGas = amber; // Khí gas — amber
+  static const mSmoke = Color(0xFFF672A7); // Khói — pink
+  static const mFlame = green; // Lửa — success green
 }
 
 /// Palette Neon-Carbon theo theme (dark/light), phát qua [ThemeExtension] để
@@ -98,28 +98,28 @@ class NcPalette extends ThemeExtension<NcPalette> {
     mFlame: NcColors.mFlame,
   );
 
-  /// Bản sáng — nền sáng, chữ đậm, cyan làm sâu cho đủ tương phản.
+  /// Bản sáng (Velzon Material Light) — nền xám nhạt, card trắng, chữ đậm.
   static const light = NcPalette(
-    carbon: Color(0xFFF4F6F8), // nền gốc sáng
-    carbonUp: Color(0xFFFFFFFF), // card raised
-    carbonPanel: Color(0xFFFFFFFF), // panel/appbar
-    carbonLine: Color(0xFFDCE1E7), // hairline
-    carbonLineBright: Color(0xFFC3CAD3), // border nổi
-    cyan: Color(0xFF0091A7), // cyan làm sâu (đọc được trên nền trắng)
-    cyanText: Color(0xFF00778A), // số liệu cyan (đậm hơn)
-    cyanDim: Color(0x1A0091A7), // ~.10 nền nhấn nhẹ
-    cyanGhost: Color(0x0D0091A7), // ~.05 row hover
-    cyanGlow: Color(0x330091A7), // glow dịu
-    white: Color(0xFF0C1114), // chữ chính (near-black)
-    whiteDim: Color(0xFF566070), // chữ phụ
-    green: Color(0xFF12A150),
-    red: Color(0xFFE11D34),
-    amber: Color(0xFFB3730A),
-    mTemp: Color(0xFF0091A7),
-    mHum: Color(0xFF2E6FE0),
-    mGas: Color(0xFFB3730A),
-    mSmoke: Color(0xFF7C4DFF),
-    mFlame: Color(0xFF12A150),
+    carbon: Color(0xFFF2F2F7), // body-bg light
+    carbonUp: Color(0xFFEFF2F7), // tertiary-bg light
+    carbonPanel: Color(0xFFFFFFFF), // card/panel trắng
+    carbonLine: Color(0xFFE9EBEC), // border light
+    carbonLineBright: Color(0xFFDFE3E8), // border nổi
+    cyan: Color(0xFF4B38B3), // primary tím
+    cyanText: Color(0xFF4B38B3), // link/số liệu tím
+    cyanDim: Color(0x1A4B38B3), // ~.10 soft bg
+    cyanGhost: Color(0x0D4B38B3), // ~.05 row hover
+    cyanGlow: Color(0x264B38B3), // soft
+    white: Color(0xFF212529), // chữ chính (đậm)
+    whiteDim: Color(0xFF878A99), // chữ phụ (muted)
+    green: Color(0xFF45CB85),
+    red: Color(0xFFF06548),
+    amber: Color(0xFFFFBE0B),
+    mTemp: Color(0xFFF06548),
+    mHum: Color(0xFF299CDB),
+    mGas: Color(0xFFF59E0B),
+    mSmoke: Color(0xFFD63384),
+    mFlame: Color(0xFF45CB85),
   );
 
   @override

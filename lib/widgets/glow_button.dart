@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../theme/neon_carbon_colors.dart';
 import '../theme/neon_carbon_theme.dart';
 
-/// Nút có glow cyan (guideline §4.4).
-/// [primary] = nền cyan chữ carbon; ngược lại = viền cyan trong suốt.
+/// Nút kiểu Velzon Material. (Reskin từ "glow button" — đã bỏ glow, giữ tên/API.)
+/// [primary]=true → nút đặc màu primary (tím), chữ trắng. Ngược lại → nút "soft":
+/// nền primary pha loãng + chữ primary.
 class GlowButton extends StatelessWidget {
   const GlowButton({
     super.key,
@@ -21,7 +22,8 @@ class GlowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = primary ? context.nc.carbon : context.nc.cyan;
+    final nc = context.nc;
+    final fg = primary ? Colors.white : nc.cyan;
     final child = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -29,41 +31,21 @@ class GlowButton extends StatelessWidget {
           Icon(icon, size: 16, color: fg),
           const SizedBox(width: 8),
         ],
-        Text(label.toUpperCase(), style: NcText.label(size: 11, color: fg)),
+        Text(label, style: NcText.label(size: 12, color: fg)),
       ],
     );
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        boxShadow: onPressed == null
-            ? null
-            : [
-                BoxShadow(
-                  color: context.nc.cyanGlow,
-                  blurRadius: 14,
-                  spreadRadius: -3,
-                ),
-              ],
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(6));
+    return FilledButton(
+      onPressed: onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: primary ? nc.cyan : nc.cyanDim, // đặc / soft
+        foregroundColor: fg,
+        elevation: 0,
+        shape: shape,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
-      child: primary
-          ? FilledButton(
-              onPressed: onPressed,
-              style: FilledButton.styleFrom(
-                backgroundColor: context.nc.cyan,
-                foregroundColor: context.nc.carbon,
-                shape: const RoundedRectangleBorder(),
-              ),
-              child: child,
-            )
-          : OutlinedButton(
-              onPressed: onPressed,
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: context.nc.cyan),
-                foregroundColor: context.nc.cyan,
-                shape: const RoundedRectangleBorder(),
-              ),
-              child: child,
-            ),
+      child: child,
     );
   }
 }

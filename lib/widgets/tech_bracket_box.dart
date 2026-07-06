@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 
 import '../theme/neon_carbon_colors.dart';
 
-/// Khung "tech-bracket" (guideline §4.1): viền hairline + ngoặc vuông ở 4 góc,
-/// vẽ hoàn toàn bằng CustomPainter (không dùng ảnh). Bọc bất kỳ child nào.
+/// Card phẳng kiểu Velzon Material: nền panel, bo góc nhẹ, viền 1px, bóng đổ mềm.
+/// (Trước đây là khung "tech-bracket" HUD — đã reskin sang card phẳng; giữ tên
+/// & API để không phải sửa nơi gọi.)
+///
+/// [bracketColor] set khi thẻ ở trạng thái nhấn (alert/đang chọn) → dùng làm màu
+/// VIỀN nhấn; [glow]=true kèm màu đó → thêm quầng bóng mềm.
 class TechBracketBox extends StatelessWidget {
   const TechBracketBox({
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
     this.bracketColor,
-    this.bracketSize = 14,
+    this.bracketSize = 14, // giữ cho tương thích API (không còn dùng)
     this.background,
     this.borderColor,
     this.glow = false,
@@ -18,8 +22,6 @@ class TechBracketBox extends StatelessWidget {
 
   final Widget child;
   final EdgeInsetsGeometry padding;
-
-  /// Màu ngoặc/nền/viền — null → lấy theo theme hiện hành qua `context.nc`.
   final Color? bracketColor;
   final double bracketSize;
   final Color? background;
@@ -29,68 +31,32 @@ class TechBracketBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nc = context.nc;
-    final bracket = bracketColor ?? nc.cyan;
-    final bg = background ?? nc.carbon;
-    final border = borderColor ?? nc.carbonLine;
-    return CustomPaint(
-      painter: _BracketPainter(bracket, bracketSize, border),
-      child: Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: bg,
-          boxShadow: glow
-              ? [
-                  BoxShadow(
-                    color: nc.cyanGlow,
-                    blurRadius: 18,
-                    spreadRadius: -3,
-                  ),
-                ]
-              : null,
-        ),
-        child: child,
+    final accent = bracketColor; // != null khi alert / đang chọn
+    final border = accent ?? borderColor ?? nc.carbonLine;
+    final bg = background ?? nc.carbonPanel;
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: border, width: accent != null ? 1.4 : 1),
+        boxShadow: (glow && accent != null)
+            ? [
+                BoxShadow(
+                  color: accent.withValues(alpha: 0.22),
+                  blurRadius: 14,
+                  spreadRadius: -4,
+                ),
+              ]
+            : const [
+                BoxShadow(
+                  color: Color(0x1A000000),
+                  blurRadius: 6,
+                  offset: Offset(0, 2),
+                ),
+              ],
       ),
+      child: child,
     );
   }
-}
-
-class _BracketPainter extends CustomPainter {
-  _BracketPainter(this.color, this.len, this.border);
-
-  final Color color;
-  final double len;
-  final Color border;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final borderPaint = Paint()
-      ..color = border
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    canvas.drawRect(Offset.zero & size, borderPaint);
-
-    final p = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.4;
-    final w = size.width;
-    final h = size.height;
-
-    // top-left
-    canvas.drawLine(Offset.zero, Offset(len, 0), p);
-    canvas.drawLine(Offset.zero, Offset(0, len), p);
-    // top-right
-    canvas.drawLine(Offset(w, 0), Offset(w - len, 0), p);
-    canvas.drawLine(Offset(w, 0), Offset(w, len), p);
-    // bottom-left
-    canvas.drawLine(Offset(0, h), Offset(len, h), p);
-    canvas.drawLine(Offset(0, h), Offset(0, h - len), p);
-    // bottom-right
-    canvas.drawLine(Offset(w, h), Offset(w - len, h), p);
-    canvas.drawLine(Offset(w, h), Offset(w, h - len), p);
-  }
-
-  @override
-  bool shouldRepaint(_BracketPainter old) =>
-      old.color != color || old.len != len || old.border != border;
 }

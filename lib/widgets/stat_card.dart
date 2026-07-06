@@ -39,7 +39,10 @@ class StatCard extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: TechBracketBox(
-        bracketColor: alert ? context.nc.red : context.nc.cyan,
+        // Viền nhấn chỉ khi cảnh báo (đỏ) hoặc đang chọn (tím); mặc định trung tính.
+        bracketColor: alert
+            ? context.nc.red
+            : (selected ? context.nc.cyan : null),
         glow: alert || selected,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

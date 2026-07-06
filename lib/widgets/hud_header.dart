@@ -4,7 +4,7 @@ import '../theme/neon_carbon_colors.dart';
 import '../theme/neon_carbon_theme.dart';
 import 'pulse_dot.dart';
 
-/// Header HUD dùng chung cho 3 tab: chấm trạng thái + tiêu đề + phụ đề + badge demo.
+/// Header trang (Velzon): chấm trạng thái + tiêu đề + phụ đề muted + badge demo soft.
 class HudHeader extends StatelessWidget {
   const HudHeader({
     super.key,
@@ -21,35 +21,42 @@ class HudHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = this.statusColor ?? context.nc.green;
+    final nc = context.nc;
+    final statusColor = this.statusColor ?? nc.green;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            PulseDot(color: statusColor, size: 10),
+            PulseDot(color: statusColor, size: 9),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                title.toUpperCase(),
-                style: NcText.heading(size: 18, color: context.nc.white),
+                title,
+                style: NcText.heading(size: 18, color: nc.white),
               ),
             ),
             if (demo)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.nc.amber.withValues(alpha: 0.15),
-                  border: Border.all(color: context.nc.amber),
+                  color: nc.amber.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(50),
                 ),
-                child: Text('DEMO', style: NcText.label(size: 9, color: context.nc.amber)),
+                child: Text(
+                  'Demo',
+                  style: NcText.label(size: 10, color: nc.amber),
+                ),
               ),
           ],
         ),
         const SizedBox(height: 4),
         Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Text(subtitle, style: NcText.mono(size: 10, color: context.nc.whiteDim)),
+          padding: const EdgeInsets.only(left: 19),
+          child: Text(
+            subtitle,
+            style: NcText.body(size: 12, color: nc.whiteDim),
+          ),
         ),
       ],
     );

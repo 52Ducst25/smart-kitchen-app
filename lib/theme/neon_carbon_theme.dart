@@ -13,14 +13,14 @@ class NeonCarbonTheme {
 
   static ThemeData get dark {
     const scheme = ColorScheme.dark(
-      primary: NcColors.cyan,
-      onPrimary: NcColors.carbon,
-      secondary: NcColors.cyanText,
-      onSecondary: NcColors.carbon,
+      primary: NcColors.cyan, // tím Velzon
+      onPrimary: Colors.white,
+      secondary: Color(0xFF3577F1), // secondary xanh Velzon
+      onSecondary: Colors.white,
       surface: NcColors.carbonPanel,
       onSurface: NcColors.white,
       error: NcColors.red,
-      onError: NcColors.carbon,
+      onError: Colors.white,
       outline: NcColors.carbonLine,
     );
     return _build(Brightness.dark, scheme, NcPalette.dark);
@@ -60,7 +60,7 @@ class NeonCarbonTheme {
         thickness: 1,
         space: 1,
       ),
-      textTheme: GoogleFonts.exo2TextTheme(base.textTheme).apply(
+      textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
         bodyColor: palette.white,
         displayColor: palette.white,
       ),
@@ -85,55 +85,52 @@ class NeonCarbonTheme {
   }
 }
 
-/// Kho text style kỹ thuật dùng lại toàn app (đúng type-scale của guideline §2).
+/// Kho text style dùng lại toàn app — nay theo Velzon Material: font **Inter**,
+/// body ~13px, weight vừa phải, letter-spacing hẹp (bỏ phong cách HUD mono/rộng).
 ///
-/// [color] nay nhận `Color?`: nếu null → KHÔNG ép màu, chữ kế thừa màu ambient
-/// (DefaultTextStyle theo theme) → tự thích ứng dark/light. Nơi cần màu cụ thể
-/// thì truyền qua `context.nc.<token>`.
+/// [color] nhận `Color?`: null → không ép màu, chữ kế thừa màu ambient
+/// (DefaultTextStyle theo theme) → tự thích ứng dark/light.
 class NcText {
   NcText._();
 
-  /// Số liệu lớn / card-value — Chakra Petch 700.
-  static TextStyle value({double size = 34, Color? color}) =>
-      GoogleFonts.chakraPetch(
-        fontSize: size,
-        fontWeight: FontWeight.w700,
-        color: color,
-        letterSpacing: 0.5,
-      );
-
-  /// Tiêu đề khu vực / vault — Chakra Petch 600.
-  static TextStyle heading({double size = 20, Color? color}) =>
-      GoogleFonts.chakraPetch(
+  /// Số liệu lớn / counter — Inter semibold.
+  static TextStyle value({double size = 24, Color? color}) => GoogleFonts.inter(
         fontSize: size,
         fontWeight: FontWeight.w600,
         color: color,
-        letterSpacing: 0.4,
+        letterSpacing: -0.2,
       );
 
-  /// Nhãn kỹ thuật nhỏ — UPPERCASE, JetBrains Mono, letter-spacing rộng.
-  static TextStyle label({double size = 10, Color? color}) =>
-      GoogleFonts.jetBrainsMono(
+  /// Tiêu đề khu vực / card-title — Inter semibold.
+  static TextStyle heading({double size = 16, Color? color}) =>
+      GoogleFonts.inter(
+        fontSize: size,
+        fontWeight: FontWeight.w600,
+        color: color,
+        letterSpacing: -0.1,
+      );
+
+  /// Nhãn nhỏ (overline) — Inter medium, letter-spacing nhẹ.
+  static TextStyle label({double size = 11, Color? color}) => GoogleFonts.inter(
         fontSize: size,
         color: color,
-        letterSpacing: size * 0.2, // ~.2em
+        letterSpacing: 0.3,
         fontWeight: FontWeight.w500,
       );
 
-  /// Dữ liệu số dạng mono có tabular-nums (căn cột đều).
-  static TextStyle mono({double size = 11, Color? color}) =>
-      GoogleFonts.jetBrainsMono(
+  /// Số liệu inline có tabular-nums (căn cột đều) — Inter.
+  static TextStyle mono({double size = 12, Color? color}) => GoogleFonts.inter(
         fontSize: size,
         color: color,
-        letterSpacing: 0.5,
+        fontWeight: FontWeight.w500,
         fontFeatures: const [FontFeature.tabularFigures()],
       );
 
-  /// Body / mô tả — Exo 2 300.
-  static TextStyle body({double size = 13, Color? color}) => GoogleFonts.exo2(
+  /// Body / mô tả — Inter 400.
+  static TextStyle body({double size = 13, Color? color}) => GoogleFonts.inter(
         fontSize: size,
         color: color,
-        height: 1.6,
-        fontWeight: FontWeight.w300,
+        height: 1.5,
+        fontWeight: FontWeight.w400,
       );
 }
