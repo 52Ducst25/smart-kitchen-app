@@ -29,9 +29,14 @@ class _MainShellState extends State<MainShell> {
   }
 
   Future<void> _checkForUpdate() async {
-    final info = await _updateService.check();
-    if (info != null && mounted) {
-      await UpdateDialog.show(context, info, _updateService);
+    try {
+      final info = await _updateService.check();
+      if (info != null && mounted) {
+        await UpdateDialog.show(context, info, _updateService);
+      }
+    } catch (_) {
+      // Im lặng khi khởi động (offline/lỗi mạng) — không quấy user.
+      // Nút "Kiểm tra cập nhật" ở tab Cài đặt sẽ hiện lỗi rõ nếu cần.
     }
   }
 

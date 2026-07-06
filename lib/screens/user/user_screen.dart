@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../services/update_service.dart';
 import '../../state/app_state.dart';
 import '../../state/theme_controller.dart';
 import '../../theme/neon_carbon_colors.dart';
 import '../../theme/neon_carbon_theme.dart';
+import '../../widgets/glow_button.dart';
 import '../../widgets/hud_header.dart';
 import '../../widgets/section_label.dart';
+import '../../widgets/update_dialog.dart';
 import 'connection_info.dart';
 import 'threshold_form.dart';
 
@@ -53,10 +56,63 @@ class UserScreen extends StatelessWidget {
         const SizedBox(height: 10),
         const _ThemeModeSelector(),
         const SizedBox(height: 20),
+        const SectionLabel('Cập nhật'),
+        const SizedBox(height: 10),
+        const _UpdateCheckButton(),
+        const SizedBox(height: 20),
         const SectionLabel('Kết nối'),
         const SizedBox(height: 10),
         const ConnectionInfo(),
       ],
+    );
+  }
+}
+
+/// Nút kiểm tra cập nhật thủ công — hiện kết quả rõ ràng (có bản mới → popup,
+/// đã mới nhất → thông báo, lỗi → hiện lý do). Bổ trợ cho lần tự kiểm khi mở app.
+class _UpdateCheckButton extends StatefulWidget {
+  const _UpdateCheckButton();
+
+  @override
+  State<_UpdateCheckButton> createState() => _UpdateCheckButtonState();
+}
+
+class _UpdateCheckButtonState extends State<_UpdateCheckButton> {
+  final _service = UpdateService();
+  bool _checking = false;
+
+  Future<void> _check() async {
+    setState(() => _checking = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final info = await _service.check();
+      if (!mounted) return;
+      if (info == null) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Đang dùng bản mới nhất.')),
+        );
+      } else {
+        await UpdateDialog.show(context, info, _service);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('Lỗi kiểm tra cập nhật: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _checking = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: GlowButton(
+        label: _checking ? 'Đang kiểm tra…' : 'Kiểm tra cập nhật',
+        icon: Icons.system_update,
+        onPressed: _checking ? null : _check,
+      ),
     );
   }
 }

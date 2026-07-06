@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -25,32 +27,33 @@ class UpdateService {
 
   final Dio _dio;
 
-  /// Đọc metadata + so version. Trả `null` nếu lỗi (offline/JSON sai) hoặc đã
-  /// là bản mới nhất → luồng khởi động im lặng, không quấy user.
+  /// Đọc metadata + so version. Trả `null` khi ĐÃ là bản mới nhất.
+  /// NÉM lỗi nếu offline / URL sai / JSON hỏng — để nút "Kiểm tra cập nhật"
+  /// thủ công hiển thị được lý do; luồng khởi động sẽ tự bắt & im lặng.
   Future<AppUpdateInfo?> check() async {
-    try {
-      final info = await PackageInfo.fromPlatform();
-      final currentCode = int.tryParse(info.buildNumber) ?? 0;
+    final info = await PackageInfo.fromPlatform();
+    final currentCode = int.tryParse(info.buildNumber) ?? 0;
 
-      // Chống cache CDN của raw.githubusercontent (~5 phút).
-      final cacheBust = DateTime.now().millisecondsSinceEpoch;
-      final res = await _dio.get<dynamic>(
-        '$_updateJsonUrl?t=$cacheBust',
-        options: Options(responseType: ResponseType.json),
-      );
+    // Chống cache CDN raw.githubusercontent (~5 phút). Ép nhận CHUỖI thô rồi tự
+    // jsonDecode: GitHub raw trả Content-Type "text/plain" nên dio không tự
+    // decode JSON theo content-type đó (đây từng là lỗi khiến không hiện popup).
+    final cacheBust = DateTime.now().millisecondsSinceEpoch;
+    final res = await _dio.get<String>(
+      '$_updateJsonUrl?t=$cacheBust',
+      options: Options(responseType: ResponseType.plain),
+    );
 
-      final data = res.data;
-      if (data is! Map) return null;
-      final map = data.map((k, v) => MapEntry(k.toString(), v));
-
-      final update = AppUpdateInfo.fromJson(
-        Map<String, dynamic>.from(map),
-        currentVersionCode: currentCode,
-      );
-      return update.updateAvailable ? update : null;
-    } catch (_) {
-      return null;
+    final decoded = jsonDecode(res.data ?? '');
+    if (decoded is! Map) {
+      throw const FormatException('update.json không đúng định dạng.');
     }
+    final map = decoded.map((k, v) => MapEntry(k.toString(), v));
+
+    final update = AppUpdateInfo.fromJson(
+      Map<String, dynamic>.from(map),
+      currentVersionCode: currentCode,
+    );
+    return update.updateAvailable ? update : null;
   }
 
   /// Tải APK về thư mục tạm rồi bung trình cài đặt.
