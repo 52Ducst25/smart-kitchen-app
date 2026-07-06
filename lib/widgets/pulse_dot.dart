@@ -5,9 +5,9 @@ import '../theme/neon_carbon_colors.dart';
 /// Chấm trạng thái phát nhịp bằng glow (guideline §4.7).
 /// Tôn trọng reduce-motion: đứng yên khi người dùng tắt animation.
 class PulseDot extends StatefulWidget {
-  const PulseDot({super.key, this.color = NcColors.green, this.size = 9});
+  const PulseDot({super.key, this.color, this.size = 9});
 
-  final Color color;
+  final Color? color;
   final double size;
 
   @override
@@ -29,24 +29,25 @@ class _PulseDotState extends State<PulseDot>
 
   @override
   Widget build(BuildContext context) {
+    final color = widget.color ?? context.nc.green;
     final reduce = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    if (reduce) return _dot(1);
+    if (reduce) return _dot(color, 1);
     return AnimatedBuilder(
       animation: _c,
-      builder: (_, _) => _dot(0.4 + _c.value * 0.6),
+      builder: (_, _) => _dot(color, 0.4 + _c.value * 0.6),
     );
   }
 
-  Widget _dot(double intensity) {
+  Widget _dot(Color color, double intensity) {
     return Container(
       width: widget.size,
       height: widget.size,
       decoration: BoxDecoration(
-        color: widget.color,
+        color: color,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: widget.color.withValues(alpha: intensity * 0.8),
+            color: color.withValues(alpha: intensity * 0.8),
             blurRadius: 8 * intensity,
             spreadRadius: 1,
           ),

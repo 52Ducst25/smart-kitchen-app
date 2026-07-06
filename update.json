@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 1,
-  "latestVersionName": "1.0.0",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.0/smart-kitchen-v1.0.0.apk",
-  "changelog": "Phiên bản đầu tiên.",
+  "latestVersionCode": 2,
+  "latestVersionName": "1.0.1",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.1/smart-kitchen-v1.0.1.apk",
+  "changelog": "- Thêm giao diện Sáng (Light theme).\n- Nút chuyển Tự động / Sáng / Tối ở tab Cài đặt.",
   "minSupportedVersionCode": 1
 }

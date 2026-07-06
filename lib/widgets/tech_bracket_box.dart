@@ -9,33 +9,39 @@ class TechBracketBox extends StatelessWidget {
     super.key,
     required this.child,
     this.padding = const EdgeInsets.all(16),
-    this.bracketColor = NcColors.cyan,
+    this.bracketColor,
     this.bracketSize = 14,
-    this.background = NcColors.carbon,
-    this.borderColor = NcColors.carbonLine,
+    this.background,
+    this.borderColor,
     this.glow = false,
   });
 
   final Widget child;
   final EdgeInsetsGeometry padding;
-  final Color bracketColor;
+
+  /// Màu ngoặc/nền/viền — null → lấy theo theme hiện hành qua `context.nc`.
+  final Color? bracketColor;
   final double bracketSize;
-  final Color background;
-  final Color borderColor;
+  final Color? background;
+  final Color? borderColor;
   final bool glow;
 
   @override
   Widget build(BuildContext context) {
+    final nc = context.nc;
+    final bracket = bracketColor ?? nc.cyan;
+    final bg = background ?? nc.carbon;
+    final border = borderColor ?? nc.carbonLine;
     return CustomPaint(
-      painter: _BracketPainter(bracketColor, bracketSize, borderColor),
+      painter: _BracketPainter(bracket, bracketSize, border),
       child: Container(
         padding: padding,
         decoration: BoxDecoration(
-          color: background,
+          color: bg,
           boxShadow: glow
-              ? const [
+              ? [
                   BoxShadow(
-                    color: NcColors.cyanGlow,
+                    color: nc.cyanGlow,
                     blurRadius: 18,
                     spreadRadius: -3,
                   ),

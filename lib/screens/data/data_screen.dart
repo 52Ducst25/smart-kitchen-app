@@ -27,7 +27,7 @@ class DataScreen extends StatelessWidget {
           subtitle: (s.isDemo || s.demoMode)
               ? 'DỮ LIỆU MẪU • $modeLabel'
               : 'TRỰC TUYẾN • $modeLabel',
-          statusColor: s.isDanger ? NcColors.red : NcColors.green,
+          statusColor: s.isDanger ? context.nc.red : context.nc.green,
           demo: s.isDemo || s.demoMode,
         ),
         const SizedBox(height: 16),
@@ -44,7 +44,7 @@ class DataScreen extends StatelessWidget {
             const Expanded(
               child: SectionLabel('Biểu đồ • Connected scatterplot'),
             ),
-            Text('MẪU TỰ ĐỘNG', style: NcText.label(size: 9, color: NcColors.cyanText)),
+            Text('MẪU TỰ ĐỘNG', style: NcText.label(size: 9, color: context.nc.cyanText)),
             Switch(
               value: s.demoMode,
               onChanged: (v) => context.read<AppState>().toggleDemo(v),

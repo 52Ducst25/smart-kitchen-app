@@ -21,7 +21,7 @@ class GlowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = primary ? NcColors.carbon : NcColors.cyan;
+    final fg = primary ? context.nc.carbon : context.nc.cyan;
     final child = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -37,9 +37,9 @@ class GlowButton extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: onPressed == null
             ? null
-            : const [
+            : [
                 BoxShadow(
-                  color: NcColors.cyanGlow,
+                  color: context.nc.cyanGlow,
                   blurRadius: 14,
                   spreadRadius: -3,
                 ),
@@ -49,8 +49,8 @@ class GlowButton extends StatelessWidget {
           ? FilledButton(
               onPressed: onPressed,
               style: FilledButton.styleFrom(
-                backgroundColor: NcColors.cyan,
-                foregroundColor: NcColors.carbon,
+                backgroundColor: context.nc.cyan,
+                foregroundColor: context.nc.carbon,
                 shape: const RoundedRectangleBorder(),
               ),
               child: child,
@@ -58,8 +58,8 @@ class GlowButton extends StatelessWidget {
           : OutlinedButton(
               onPressed: onPressed,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: NcColors.cyan),
-                foregroundColor: NcColors.cyan,
+                side: BorderSide(color: context.nc.cyan),
+                foregroundColor: context.nc.cyan,
                 shape: const RoundedRectangleBorder(),
               ),
               child: child,

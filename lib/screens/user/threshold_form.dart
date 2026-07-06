@@ -62,16 +62,16 @@ class _ThresholdFormState extends State<ThresholdForm> {
     await showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: NcColors.carbonPanel,
+        backgroundColor: context.nc.carbonPanel,
         icon: Icon(
           ok ? Icons.check_circle_outline : Icons.error_outline,
-          color: ok ? NcColors.green : NcColors.red,
+          color: ok ? context.nc.green : context.nc.red,
           size: 40,
         ),
         title: Text(
           ok ? 'Lưu thành công' : 'Lưu thất bại',
           textAlign: TextAlign.center,
-          style: NcText.heading(size: 16),
+          style: NcText.heading(size: 16, color: context.nc.white),
         ),
         content: Text(
           ok
@@ -80,13 +80,13 @@ class _ThresholdFormState extends State<ThresholdForm> {
               : 'Không ghi được lên hệ thống. Kiểm tra kết nối mạng / '
                     'Firebase rồi thử lại.',
           textAlign: TextAlign.center,
-          style: NcText.body(size: 13),
+          style: NcText.body(size: 13, color: context.nc.whiteDim),
         ),
         actions: [
           Center(
             child: TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK', style: TextStyle(color: NcColors.cyan)),
+              child: Text('OK', style: TextStyle(color: context.nc.cyan)),
             ),
           ),
         ],
@@ -108,16 +108,16 @@ class _ThresholdFormState extends State<ThresholdForm> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label.toUpperCase(), style: NcText.label(size: 10)),
-            Text(display, style: NcText.mono(size: 12)),
+            Text(label.toUpperCase(), style: NcText.label(size: 10, color: context.nc.whiteDim)),
+            Text(display, style: NcText.mono(size: 12, color: context.nc.cyanText)),
           ],
         ),
         Slider(
           value: value.clamp(min, max),
           min: min,
           max: max,
-          activeColor: NcColors.cyan,
-          inactiveColor: NcColors.carbonLineBright,
+          activeColor: context.nc.cyan,
+          inactiveColor: context.nc.carbonLineBright,
           onChanged: onChanged,
         ),
       ],

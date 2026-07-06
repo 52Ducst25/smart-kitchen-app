@@ -15,14 +15,14 @@ class ModeSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _seg('TỰ ĐỘNG', DeviceMode.auto),
+        _seg(context, 'TỰ ĐỘNG', DeviceMode.auto),
         const SizedBox(width: 1),
-        _seg('THỦ CÔNG', DeviceMode.manual),
+        _seg(context, 'THỦ CÔNG', DeviceMode.manual),
       ],
     );
   }
 
-  Widget _seg(String label, DeviceMode m) {
+  Widget _seg(BuildContext context, String label, DeviceMode m) {
     final active = mode == m;
     return Expanded(
       child: GestureDetector(
@@ -31,16 +31,16 @@ class ModeSwitcher extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: active ? NcColors.cyanDim : NcColors.carbonPanel,
+            color: active ? context.nc.cyanDim : context.nc.carbonPanel,
             border: Border.all(
-              color: active ? NcColors.cyan : NcColors.carbonLine,
+              color: active ? context.nc.cyan : context.nc.carbonLine,
             ),
           ),
           child: Text(
             label,
             style: NcText.label(
               size: 11,
-              color: active ? NcColors.cyan : NcColors.whiteDim,
+              color: active ? context.nc.cyan : context.nc.whiteDim,
             ),
           ),
         ),

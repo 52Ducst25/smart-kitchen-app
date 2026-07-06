@@ -40,28 +40,28 @@ class _MainShellState extends State<MainShell> {
     return Scaffold(
       body: SafeArea(child: IndexedStack(index: _index, children: _screens)),
       bottomNavigationBar: DecoratedBox(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: NcColors.carbonLine)),
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: context.nc.carbonLine)),
         ),
         child: NavigationBar(
-          backgroundColor: NcColors.carbonPanel,
-          indicatorColor: NcColors.cyanDim,
+          backgroundColor: context.nc.carbonPanel,
+          indicatorColor: context.nc.cyanDim,
           selectedIndex: _index,
           onDestinationSelected: (i) => setState(() => _index = i),
-          destinations: const [
+          destinations: [
             NavigationDestination(
-              icon: Icon(Icons.sensors_outlined),
-              selectedIcon: Icon(Icons.sensors, color: NcColors.cyan),
+              icon: const Icon(Icons.sensors_outlined),
+              selectedIcon: Icon(Icons.sensors, color: context.nc.cyan),
               label: 'DATA',
             ),
             NavigationDestination(
-              icon: Icon(Icons.tune_outlined),
-              selectedIcon: Icon(Icons.tune, color: NcColors.cyan),
+              icon: const Icon(Icons.tune_outlined),
+              selectedIcon: Icon(Icons.tune, color: context.nc.cyan),
               label: 'CONTROL',
             ),
             NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings, color: NcColors.cyan),
+              icon: const Icon(Icons.settings_outlined),
+              selectedIcon: Icon(Icons.settings, color: context.nc.cyan),
               label: 'USER',
             ),
           ],

@@ -28,12 +28,12 @@ class ConnectionInfo extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(r.$1, style: NcText.body(size: 12)),
+                  Text(r.$1, style: NcText.body(size: 12, color: context.nc.whiteDim)),
                   Text(
                     r.$2,
                     style: NcText.mono(
                       size: 10,
-                      color: demo ? NcColors.amber : NcColors.cyanText,
+                      color: demo ? context.nc.amber : context.nc.cyanText,
                     ),
                   ),
                 ],

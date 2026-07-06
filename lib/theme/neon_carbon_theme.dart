@@ -3,13 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'neon_carbon_colors.dart';
 
-/// Theme tối Neon-Carbon: Material 3, nền carbon, nhấn cyan.
+/// Theme Neon-Carbon: Material 3. Có 2 biến thể [dark] (nền carbon, nhấn cyan)
+/// và [light] (nền sáng, chữ đậm, cyan làm sâu). Cả hai gắn [NcPalette] để
+/// widget đọc màu động qua `context.nc`.
+///
 /// Body dùng Exo 2; tiêu đề/số dùng Chakra Petch; dữ liệu/nhãn dùng JetBrains Mono.
 class NeonCarbonTheme {
   NeonCarbonTheme._();
 
   static ThemeData get dark {
-    final base = ThemeData(brightness: Brightness.dark, useMaterial3: true);
     const scheme = ColorScheme.dark(
       primary: NcColors.cyan,
       onPrimary: NcColors.carbon,
@@ -21,35 +23,62 @@ class NeonCarbonTheme {
       onError: NcColors.carbon,
       outline: NcColors.carbonLine,
     );
+    return _build(Brightness.dark, scheme, NcPalette.dark);
+  }
 
+  static ThemeData get light {
+    final palette = NcPalette.light;
+    final scheme = ColorScheme.light(
+      primary: palette.cyan,
+      onPrimary: Colors.white,
+      secondary: palette.cyanText,
+      onSecondary: Colors.white,
+      surface: palette.carbonPanel,
+      onSurface: palette.white,
+      error: palette.red,
+      onError: Colors.white,
+      outline: palette.carbonLine,
+    );
+    return _build(Brightness.light, scheme, palette);
+  }
+
+  /// Dựng ThemeData chung cho cả 2 biến thể (DRY) từ [scheme] + [palette].
+  static ThemeData _build(
+    Brightness brightness,
+    ColorScheme scheme,
+    NcPalette palette,
+  ) {
+    final base = ThemeData(brightness: brightness, useMaterial3: true);
     return base.copyWith(
       colorScheme: scheme,
-      scaffoldBackgroundColor: NcColors.carbon,
-      canvasColor: NcColors.carbon,
-      dividerColor: NcColors.carbonLine,
-      dividerTheme: const DividerThemeData(
-        color: NcColors.carbonLine,
+      extensions: [palette],
+      scaffoldBackgroundColor: palette.carbon,
+      canvasColor: palette.carbon,
+      dividerColor: palette.carbonLine,
+      dividerTheme: DividerThemeData(
+        color: palette.carbonLine,
         thickness: 1,
         space: 1,
       ),
-      textTheme: GoogleFonts.exo2TextTheme(
-        base.textTheme,
-      ).apply(bodyColor: NcColors.white, displayColor: NcColors.white),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: NcColors.carbonPanel,
-        foregroundColor: NcColors.white,
+      textTheme: GoogleFonts.exo2TextTheme(base.textTheme).apply(
+        bodyColor: palette.white,
+        displayColor: palette.white,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: palette.carbonPanel,
+        foregroundColor: palette.white,
         elevation: 0,
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
-              ? NcColors.cyan
-              : NcColors.whiteDim,
+              ? palette.cyan
+              : palette.whiteDim,
         ),
         trackColor: WidgetStateProperty.resolveWith(
           (s) => s.contains(WidgetState.selected)
-              ? NcColors.cyanDim
-              : NcColors.carbonLineBright,
+              ? palette.cyanDim
+              : palette.carbonLineBright,
         ),
       ),
     );
@@ -57,11 +86,15 @@ class NeonCarbonTheme {
 }
 
 /// Kho text style kỹ thuật dùng lại toàn app (đúng type-scale của guideline §2).
+///
+/// [color] nay nhận `Color?`: nếu null → KHÔNG ép màu, chữ kế thừa màu ambient
+/// (DefaultTextStyle theo theme) → tự thích ứng dark/light. Nơi cần màu cụ thể
+/// thì truyền qua `context.nc.<token>`.
 class NcText {
   NcText._();
 
   /// Số liệu lớn / card-value — Chakra Petch 700.
-  static TextStyle value({double size = 34, Color color = NcColors.white}) =>
+  static TextStyle value({double size = 34, Color? color}) =>
       GoogleFonts.chakraPetch(
         fontSize: size,
         fontWeight: FontWeight.w700,
@@ -70,7 +103,7 @@ class NcText {
       );
 
   /// Tiêu đề khu vực / vault — Chakra Petch 600.
-  static TextStyle heading({double size = 20, Color color = NcColors.white}) =>
+  static TextStyle heading({double size = 20, Color? color}) =>
       GoogleFonts.chakraPetch(
         fontSize: size,
         fontWeight: FontWeight.w600,
@@ -79,7 +112,7 @@ class NcText {
       );
 
   /// Nhãn kỹ thuật nhỏ — UPPERCASE, JetBrains Mono, letter-spacing rộng.
-  static TextStyle label({double size = 10, Color color = NcColors.whiteDim}) =>
+  static TextStyle label({double size = 10, Color? color}) =>
       GoogleFonts.jetBrainsMono(
         fontSize: size,
         color: color,
@@ -88,7 +121,7 @@ class NcText {
       );
 
   /// Dữ liệu số dạng mono có tabular-nums (căn cột đều).
-  static TextStyle mono({double size = 11, Color color = NcColors.cyanText}) =>
+  static TextStyle mono({double size = 11, Color? color}) =>
       GoogleFonts.jetBrainsMono(
         fontSize: size,
         color: color,
@@ -97,8 +130,7 @@ class NcText {
       );
 
   /// Body / mô tả — Exo 2 300.
-  static TextStyle body({double size = 13, Color color = NcColors.whiteDim}) =>
-      GoogleFonts.exo2(
+  static TextStyle body({double size = 13, Color? color}) => GoogleFonts.exo2(
         fontSize: size,
         color: color,
         height: 1.6,

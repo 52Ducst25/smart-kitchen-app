@@ -60,19 +60,21 @@ class _UpdateDialogState extends State<UpdateDialog> {
   @override
   Widget build(BuildContext context) {
     final info = widget.info;
+    final nc = context.nc;
     return PopScope(
       canPop: !info.forceUpdate && !_downloading,
       child: AlertDialog(
-        backgroundColor: NcColors.carbonPanel,
-        shape: const RoundedRectangleBorder(
-          side: BorderSide(color: NcColors.cyan),
-        ),
+        backgroundColor: nc.carbonPanel,
+        shape: RoundedRectangleBorder(side: BorderSide(color: nc.cyan)),
         title: Row(
           children: [
-            const Icon(Icons.system_update, color: NcColors.cyan, size: 20),
+            Icon(Icons.system_update, color: nc.cyan, size: 20),
             const SizedBox(width: 8),
             Expanded(
-              child: Text('CÓ BẢN CẬP NHẬT', style: NcText.heading(size: 16)),
+              child: Text(
+                'CÓ BẢN CẬP NHẬT',
+                style: NcText.heading(size: 16, color: nc.white),
+              ),
             ),
           ],
         ),
@@ -82,28 +84,28 @@ class _UpdateDialogState extends State<UpdateDialog> {
           children: [
             Text(
               'Phiên bản ${info.latestVersionName}',
-              style: NcText.mono(size: 12),
+              style: NcText.mono(size: 12, color: nc.cyanText),
             ),
             if (info.changelog.isNotEmpty) ...[
               const SizedBox(height: 10),
-              Text(info.changelog, style: NcText.body(size: 13)),
+              Text(info.changelog, style: NcText.body(size: 13, color: nc.whiteDim)),
             ],
             if (_downloading) ...[
               const SizedBox(height: 16),
               LinearProgressIndicator(
                 value: _progress == 0 ? null : _progress,
-                backgroundColor: NcColors.carbonLine,
-                color: NcColors.cyan,
+                backgroundColor: nc.carbonLine,
+                color: nc.cyan,
               ),
               const SizedBox(height: 6),
               Text(
                 'Đang tải ${(_progress * 100).toStringAsFixed(0)}%',
-                style: NcText.label(size: 10),
+                style: NcText.label(size: 10, color: nc.whiteDim),
               ),
             ],
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(_error!, style: NcText.body(size: 12, color: NcColors.red)),
+              Text(_error!, style: NcText.body(size: 12, color: nc.red)),
             ],
           ],
         ),
@@ -115,7 +117,7 @@ class _UpdateDialogState extends State<UpdateDialog> {
                     onPressed: () => Navigator.of(context).pop(),
                     child: Text(
                       'ĐỂ SAU',
-                      style: NcText.label(size: 11, color: NcColors.whiteDim),
+                      style: NcText.label(size: 11, color: nc.whiteDim),
                     ),
                   ),
                 GlowButton(

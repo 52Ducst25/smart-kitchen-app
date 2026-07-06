@@ -32,22 +32,22 @@ class DeviceRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: TechBracketBox(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        bracketColor: on ? NcColors.cyan : NcColors.carbonLineBright,
+        bracketColor: on ? context.nc.cyan : context.nc.carbonLineBright,
         child: Row(
           children: [
-            Icon(icon, color: on ? NcColors.cyan : NcColors.whiteDim, size: 22),
+            Icon(icon, color: on ? context.nc.cyan : context.nc.whiteDim, size: 22),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(name, style: NcText.body(size: 14, color: NcColors.white)),
+                  Text(name, style: NcText.body(size: 14, color: context.nc.white)),
                   const SizedBox(height: 2),
                   Text(
                     enabled ? (on ? onDesc : offDesc) : 'Tự động điều khiển',
                     style: NcText.label(
                       size: 9,
-                      color: on ? NcColors.cyanText : NcColors.whiteDim,
+                      color: on ? context.nc.cyanText : context.nc.whiteDim,
                     ),
                   ),
                 ],

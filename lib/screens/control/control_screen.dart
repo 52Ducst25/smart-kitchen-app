@@ -27,7 +27,7 @@ class ControlScreen extends StatelessWidget {
           subtitle: manual
               ? 'THỦ CÔNG • BẠN ĐANG ĐIỀU KHIỂN'
               : 'TỰ ĐỘNG • FIRMWARE ĐIỀU KHIỂN',
-          statusColor: s.isDanger ? NcColors.red : NcColors.green,
+          statusColor: s.isDanger ? context.nc.red : context.nc.green,
           demo: s.isDemo,
         ),
         const SizedBox(height: 16),
@@ -43,7 +43,7 @@ class ControlScreen extends StatelessWidget {
             child: Text(
               'Chuyển sang THỦ CÔNG để điều khiển tay. Ở chế độ Tự động, firmware '
               'tự đóng van / bật quạt / bơm theo ngưỡng.',
-              style: NcText.body(size: 12, color: NcColors.amber),
+              style: NcText.body(size: 12, color: context.nc.amber),
             ),
           ),
         DeviceRow(
@@ -92,12 +92,15 @@ class ControlScreen extends StatelessWidget {
       final ok = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          backgroundColor: NcColors.carbonPanel,
-          title: Text('Mở van gas?', style: NcText.heading(size: 16)),
+          backgroundColor: context.nc.carbonPanel,
+          title: Text(
+            'Mở van gas?',
+            style: NcText.heading(size: 16, color: context.nc.white),
+          ),
           content: Text(
             'Hệ thống đang cảnh báo nguy hiểm. Mở van gas lúc này có thể không '
             'an toàn. Tiếp tục?',
-            style: NcText.body(size: 13),
+            style: NcText.body(size: 13, color: context.nc.whiteDim),
           ),
           actions: [
             TextButton(
@@ -106,7 +109,7 @@ class ControlScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Mở', style: TextStyle(color: NcColors.red)),
+              child: Text('Mở', style: TextStyle(color: context.nc.red)),
             ),
           ],
         ),

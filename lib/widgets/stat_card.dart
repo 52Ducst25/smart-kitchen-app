@@ -26,15 +26,15 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueColor = alert ? NcColors.red : (accent ?? NcColors.white);
+    final valueColor = alert ? context.nc.red : (accent ?? context.nc.white);
     return TechBracketBox(
-      bracketColor: alert ? NcColors.red : NcColors.cyan,
+      bracketColor: alert ? context.nc.red : context.nc.cyan,
       glow: alert,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(id.toUpperCase(), style: NcText.label()),
+          Text(id.toUpperCase(), style: NcText.label(color: context.nc.whiteDim)),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 6),
             child: Row(
@@ -51,7 +51,7 @@ class StatCard extends StatelessWidget {
                 ),
                 if (unit != null) ...[
                   const SizedBox(width: 4),
-                  Text(unit!, style: NcText.label(size: 11)),
+                  Text(unit!, style: NcText.label(size: 11, color: context.nc.whiteDim)),
                 ],
               ],
             ),
@@ -61,7 +61,7 @@ class StatCard extends StatelessWidget {
               desc!,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: NcText.body(size: 11),
+              style: NcText.body(size: 11, color: context.nc.whiteDim),
             ),
         ],
       ),

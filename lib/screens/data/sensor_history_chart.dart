@@ -21,28 +21,33 @@ class SensorHistoryChart extends StatelessWidget {
       return TechBracketBox(
         child: SizedBox(
           height: 200,
-          child: Center(child: Text('Đang thu thập dữ liệu…', style: NcText.body())),
+          child: Center(
+            child: Text(
+              'Đang thu thập dữ liệu…',
+              style: NcText.body(color: context.nc.whiteDim),
+            ),
+          ),
         ),
       );
     }
 
     final series = <_Series>[
-      _Series('Nhiệt', NcColors.mTemp, _spots((d) => d.temp / 80 * 100)),
-      _Series('Ẩm', NcColors.mHum, _spots((d) => d.hum)),
-      _Series('Gas', NcColors.mGas, _spots((d) => adcToPercent(d.gas).toDouble())),
-      _Series('Khói', NcColors.mSmoke, _spots((d) => adcToPercent(d.smoke).toDouble())),
+      _Series('Nhiệt', context.nc.mTemp, _spots((d) => d.temp / 80 * 100)),
+      _Series('Ẩm', context.nc.mHum, _spots((d) => d.hum)),
+      _Series('Gas', context.nc.mGas, _spots((d) => adcToPercent(d.gas).toDouble())),
+      _Series('Khói', context.nc.mSmoke, _spots((d) => adcToPercent(d.smoke).toDouble())),
     ];
 
     return TechBracketBox(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('% THANG ĐO (0–100)', style: NcText.label(size: 9)),
+          Text('% THANG ĐO (0–100)', style: NcText.label(size: 9, color: context.nc.whiteDim)),
           const SizedBox(height: 10),
           Wrap(
             spacing: 14,
             runSpacing: 6,
-            children: [for (final s in series) _legend(s.color, s.label)],
+            children: [for (final s in series) _legend(context, s.color, s.label)],
           ),
           const SizedBox(height: 14),
           SizedBox(
@@ -56,7 +61,7 @@ class SensorHistoryChart extends StatelessWidget {
                   drawVerticalLine: false,
                   horizontalInterval: 25,
                   getDrawingHorizontalLine: (v) =>
-                      const FlLine(color: NcColors.carbonLine, strokeWidth: 1),
+                      FlLine(color: context.nc.carbonLine, strokeWidth: 1),
                 ),
                 titlesData: FlTitlesData(
                   leftTitles: AxisTitles(
@@ -66,7 +71,7 @@ class SensorHistoryChart extends StatelessWidget {
                       reservedSize: 26,
                       getTitlesWidget: (v, m) => Text(
                         v.toInt().toString(),
-                        style: NcText.mono(size: 8, color: NcColors.whiteDim),
+                        style: NcText.mono(size: 8, color: context.nc.whiteDim),
                       ),
                     ),
                   ),
@@ -102,7 +107,7 @@ class SensorHistoryChart extends StatelessWidget {
         ),
       );
 
-  Widget _legend(Color c, String label) => Row(
+  Widget _legend(BuildContext context, Color c, String label) => Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
@@ -111,7 +116,7 @@ class SensorHistoryChart extends StatelessWidget {
             decoration: BoxDecoration(color: c, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
-          Text(label, style: NcText.label(size: 9)),
+          Text(label, style: NcText.label(size: 9, color: context.nc.whiteDim)),
         ],
       );
 }

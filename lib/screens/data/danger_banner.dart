@@ -16,24 +16,24 @@ class DangerBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: NcColors.red.withValues(alpha: 0.12),
-        border: Border.all(color: NcColors.red),
+        color: context.nc.red.withValues(alpha: 0.12),
+        border: Border.all(color: context.nc.red),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const PulseDot(color: NcColors.red, size: 10),
+              PulseDot(color: context.nc.red, size: 10),
               const SizedBox(width: 10),
-              Text('NGUY HIỂM', style: NcText.label(size: 12, color: NcColors.red)),
+              Text('NGUY HIỂM', style: NcText.label(size: 12, color: context.nc.red)),
             ],
           ),
           const SizedBox(height: 8),
           for (final a in alerts)
             Padding(
               padding: const EdgeInsets.only(top: 2),
-              child: Text('• $a', style: NcText.body(size: 12, color: NcColors.white)),
+              child: Text('• $a', style: NcText.body(size: 12, color: context.nc.white)),
             ),
         ],
       ),
