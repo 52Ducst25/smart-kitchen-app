@@ -1,19 +1,27 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/sensor_data.dart';
+import '../../models/sensor_metric.dart';
 import '../../theme/neon_carbon_colors.dart';
 import '../../theme/neon_carbon_theme.dart';
-import '../../utils/adc_scale.dart';
 import '../../widgets/tech_bracket_box.dart';
 
-/// Connected Scatterplot: mỗi điểm đo là 1 chấm, nối nhau bằng đoạn thẳng.
-/// 4 chỉ số được chuẩn hoá về thang 0–100% để so sánh cùng 1 trục:
-/// Nhiệt (/80°C), Ẩm (%), Gas (/4095), Khói (/4095).
-class SensorHistoryChart extends StatelessWidget {
-  const SensorHistoryChart({super.key, required this.history});
+/// Biểu đồ 1 chỉ số theo GIÁ TRỊ ĐO THẬT (không quy về %). Trục Y tự co giãn
+/// theo khoảng dữ liệu thực tế; điểm nối nhau kiểu connected scatterplot.
+class MetricHistoryChart extends StatelessWidget {
+  const MetricHistoryChart({
+    super.key,
+    required this.history,
+    required this.metric,
+    required this.color,
+  });
 
   final List<SensorData> history;
+  final SensorMetric metric;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
@@ -31,35 +39,84 @@ class SensorHistoryChart extends StatelessWidget {
       );
     }
 
-    final series = <_Series>[
-      _Series('Nhiệt', context.nc.mTemp, _spots((d) => d.temp / 80 * 100)),
-      _Series('Ẩm', context.nc.mHum, _spots((d) => d.hum)),
-      _Series('Gas', context.nc.mGas, _spots((d) => adcToPercent(d.gas).toDouble())),
-      _Series('Khói', context.nc.mSmoke, _spots((d) => adcToPercent(d.smoke).toDouble())),
+    final values = [for (final d in history) metric.valueOf(d)];
+    final isFlame = metric == SensorMetric.flame;
+
+    // Trục Y: tự co giãn theo khoảng dữ liệu + đệm 15% cho thoáng; lửa cố định 0–1.
+    double minY, maxY;
+    if (isFlame) {
+      minY = -0.2;
+      maxY = 1.2;
+    } else {
+      var lo = values.reduce(min);
+      var hi = values.reduce(max);
+      if ((hi - lo).abs() < 1e-6) {
+        lo -= 1;
+        hi += 1;
+      }
+      final pad = (hi - lo) * 0.15;
+      minY = lo - pad;
+      maxY = hi + pad;
+    }
+    final interval = max((maxY - minY) / 4, 0.0001);
+    final decimals = (maxY - minY) < 10 ? 1 : 0;
+
+    String fmtAxis(double v) {
+      if (isFlame) {
+        if (v >= 0.8) return 'Có';
+        if (v <= 0.2) return 'Không';
+        return '';
+      }
+      return v.toStringAsFixed(decimals);
+    }
+
+    final latest = values.last;
+    final latestLabel = isFlame
+        ? (latest >= 0.5 ? 'CÓ' : 'KHÔNG')
+        : latest.toStringAsFixed(decimals);
+
+    final spots = [
+      for (var i = 0; i < values.length; i++) FlSpot(i.toDouble(), values[i]),
     ];
 
     return TechBracketBox(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('% THANG ĐO (0–100)', style: NcText.label(size: 9, color: context.nc.whiteDim)),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 14,
-            runSpacing: 6,
-            children: [for (final s in series) _legend(context, s.color, s.label)],
+          Row(
+            children: [
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                metric.label.toUpperCase(),
+                style: NcText.label(size: 10, color: context.nc.whiteDim),
+              ),
+              const Spacer(),
+              Text(latestLabel, style: NcText.mono(size: 14, color: color)),
+              if (metric.unit.isNotEmpty) ...[
+                const SizedBox(width: 4),
+                Text(
+                  metric.unit,
+                  style: NcText.label(size: 10, color: context.nc.whiteDim),
+                ),
+              ],
+            ],
           ),
           const SizedBox(height: 14),
           SizedBox(
             height: 200,
             child: LineChart(
               LineChartData(
-                minY: 0,
-                maxY: 100,
+                minY: minY,
+                maxY: maxY,
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  horizontalInterval: 25,
+                  horizontalInterval: interval,
                   getDrawingHorizontalLine: (v) =>
                       FlLine(color: context.nc.carbonLine, strokeWidth: 1),
                 ),
@@ -67,21 +124,43 @@ class SensorHistoryChart extends StatelessWidget {
                   leftTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      interval: 25,
-                      reservedSize: 26,
+                      interval: interval,
+                      reservedSize: 40,
                       getTitlesWidget: (v, m) => Text(
-                        v.toInt().toString(),
+                        fmtAxis(v),
                         style: NcText.mono(size: 8, color: context.nc.whiteDim),
                       ),
                     ),
                   ),
-                  rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  bottomTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 borderData: FlBorderData(show: false),
                 lineTouchData: const LineTouchData(enabled: false),
-                lineBarsData: [for (final s in series) _bar(s)],
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: spots,
+                    isCurved: false, // đoạn thẳng nối điểm = connected scatterplot
+                    color: color,
+                    barWidth: 1.6,
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, pct, bar, i) =>
+                          FlDotCirclePainter(radius: 2.4, color: color, strokeWidth: 0),
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      color: color.withValues(alpha: 0.08),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -89,42 +168,4 @@ class SensorHistoryChart extends StatelessWidget {
       ),
     );
   }
-
-  List<FlSpot> _spots(double Function(SensorData) f) => [
-        for (var i = 0; i < history.length; i++)
-          FlSpot(i.toDouble(), f(history[i]).clamp(0, 100).toDouble()),
-      ];
-
-  LineChartBarData _bar(_Series s) => LineChartBarData(
-        spots: s.spots,
-        isCurved: false, // đoạn thẳng nối điểm = connected scatterplot
-        color: s.color,
-        barWidth: 1.4,
-        dotData: FlDotData(
-          show: true,
-          getDotPainter: (spot, pct, bar, i) =>
-              FlDotCirclePainter(radius: 2.4, color: s.color, strokeWidth: 0),
-        ),
-      );
-
-  Widget _legend(BuildContext context, Color c, String label) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: c, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 6),
-          Text(label, style: NcText.label(size: 9, color: context.nc.whiteDim)),
-        ],
-      );
-}
-
-class _Series {
-  const _Series(this.label, this.color, this.spots);
-
-  final String label;
-  final Color color;
-  final List<FlSpot> spots;
 }

@@ -15,6 +15,8 @@ class StatCard extends StatelessWidget {
     this.desc,
     this.alert = false,
     this.accent,
+    this.onTap,
+    this.selected = false,
   });
 
   final String id;
@@ -24,12 +26,21 @@ class StatCard extends StatelessWidget {
   final bool alert;
   final Color? accent;
 
+  /// Bấm vào thẻ (vd để mở biểu đồ của chỉ số này). Null = không bắt sự kiện.
+  final VoidCallback? onTap;
+
+  /// Đang được chọn (đang xem biểu đồ) → làm nổi bằng glow cyan.
+  final bool selected;
+
   @override
   Widget build(BuildContext context) {
     final valueColor = alert ? context.nc.red : (accent ?? context.nc.white);
-    return TechBracketBox(
-      bracketColor: alert ? context.nc.red : context.nc.cyan,
-      glow: alert,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: TechBracketBox(
+        bracketColor: alert ? context.nc.red : context.nc.cyan,
+        glow: alert || selected,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,7 +74,8 @@ class StatCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: NcText.body(size: 11, color: context.nc.whiteDim),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
