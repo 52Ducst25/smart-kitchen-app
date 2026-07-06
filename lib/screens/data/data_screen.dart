@@ -23,6 +23,7 @@ class DataScreen extends StatefulWidget {
 
 class _DataScreenState extends State<DataScreen> {
   SensorMetric? _selected; // null = chưa chọn → chưa hiện biểu đồ
+  bool _logsShown = true; // toggle ẩn/hiện nhật ký hoạt động
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +99,26 @@ class _DataScreenState extends State<DataScreen> {
           ),
           const SizedBox(height: 20),
         ],
-        const SectionLabel('Nhật ký hoạt động'),
-        const SizedBox(height: 10),
-        LogList(logs: s.logs),
+        InkWell(
+          onTap: () => setState(() => _logsShown = !_logsShown),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              children: [
+                const Expanded(child: SectionLabel('Nhật ký hoạt động')),
+                Icon(
+                  _logsShown ? Icons.expand_less : Icons.expand_more,
+                  size: 20,
+                  color: context.nc.whiteDim,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_logsShown) ...[
+          const SizedBox(height: 10),
+          LogList(logs: s.logs),
+        ],
       ],
     );
   }

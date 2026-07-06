@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 import '../models/controls.dart';
 import '../models/log_entry.dart';
@@ -97,13 +98,48 @@ class AppState extends ChangeNotifier {
 
   // --- Hành động điều khiển (ghi xuống Firebase) ---
   // Bọc _guard để lỗi ghi (mất mạng/quyền) không thành lỗi async chưa bắt.
-  Future<void> setMode(DeviceMode mode) => _guard(() => _source.setMode(mode));
-  Future<void> setDevice(String key, bool on) =>
-      _guard(() => _source.setDevice(key, on));
+  // Sau khi ghi, đẩy 1 dòng nhật ký để phản ánh thao tác thủ công của người dùng
+  // (trước đây chỉ ghi controls nên nhật ký không cập nhật khi bật/tắt thiết bị).
+  Future<void> setMode(DeviceMode mode) async {
+    await _guard(() => _source.setMode(mode));
+    await pushLog(LogEntry(
+      msg: mode == DeviceMode.manual
+          ? 'Chuyển chế độ Thủ công'
+          : 'Chuyển chế độ Tự động',
+      time: _timeLabel(),
+    ));
+  }
+
+  Future<void> setDevice(String key, bool on) async {
+    await _guard(() => _source.setDevice(key, on));
+    await pushLog(LogEntry(
+      msg: '${_deviceAction(key, on)} (thủ công)',
+      time: _timeLabel(),
+    ));
+  }
+
   /// Trả về true nếu ghi thành công, false nếu lỗi (để UI báo người dùng).
   Future<bool> updateSettings(Settings s) =>
       _guardBool(() => _source.updateSettings(s));
   Future<void> pushLog(LogEntry e) => _guard(() => _source.pushLog(e));
+
+  static String _timeLabel() => DateFormat('HH:mm').format(DateTime.now());
+
+  /// Mô tả thao tác theo khoá thiết bị (van dùng "Mở/Đóng", còn lại "Bật/Tắt").
+  static String _deviceAction(String key, bool on) {
+    switch (key) {
+      case 'valve':
+        return on ? 'Mở van gas' : 'Đóng van gas';
+      case 'exhaustFan':
+        return on ? 'Bật quạt hút' : 'Tắt quạt hút';
+      case 'coolFan':
+        return on ? 'Bật quạt làm mát' : 'Tắt quạt làm mát';
+      case 'pump':
+        return on ? 'Bật bơm nước' : 'Tắt bơm nước';
+      default:
+        return on ? 'Bật $key' : 'Tắt $key';
+    }
+  }
 
   Future<void> _guard(Future<void> Function() action) async {
     try {
