@@ -25,11 +25,13 @@ class DangerAlertDialog extends StatelessWidget {
     final s = context.watch<AppState>();
     final nc = context.nc;
 
-    // Hết nguy hiểm → tự đóng (sau frame, tránh pop giữa lúc build).
+    // Hết nguy hiểm → tự đóng (sau frame, tránh pop giữa lúc build). Chỉ đóng
+    // khi popup này đang ở TRÊN CÙNG để không lỡ đóng nhầm dialog khác.
     if (!s.isDanger) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final nav = Navigator.of(context);
-        if (nav.canPop()) nav.pop();
+        if (ModalRoute.of(context)?.isCurrent == true) {
+          Navigator.of(context).pop();
+        }
       });
     }
 
@@ -37,6 +39,7 @@ class DangerAlertDialog extends StatelessWidget {
     return PopScope(
       canPop: false, // chặn nút back — chỉ đóng khi hết nguy hiểm
       child: AlertDialog(
+        scrollable: true, // tránh tràn khung → nút luôn bấm được
         backgroundColor: nc.carbonPanel,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -71,33 +74,27 @@ class DangerAlertDialog extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 14),
-            if (manual) ...[
-              Text('XỬ LÝ NGAY', style: NcText.label(size: 10, color: nc.whiteDim)),
+            Text('XỬ LÝ NGAY', style: NcText.label(size: 10, color: nc.whiteDim)),
+            const SizedBox(height: 8),
+            // Luôn hiện nút thiết bị (cả Auto lẫn Manual) để user can thiệp ngay.
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _act('Đóng van gas', Icons.block,
+                    () => _apply(s, 'valve', false)),
+                _act('Bật quạt hút', Icons.air,
+                    () => _apply(s, 'exhaustFan', true)),
+                _act('Bật bơm', Icons.water_drop_outlined,
+                    () => _apply(s, 'pump', true)),
+              ],
+            ),
+            if (!manual) ...[
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  _act('Đóng van gas', Icons.block,
-                      () => s.setDevice('valve', false)),
-                  _act('Bật quạt hút', Icons.air,
-                      () => s.setDevice('exhaustFan', true)),
-                  _act('Bật bơm', Icons.water_drop_outlined,
-                      () => s.setDevice('pump', true)),
-                ],
-              ),
-            ] else ...[
               Text(
-                'Chế độ TỰ ĐỘNG: firmware đang tự đóng van / bật quạt / bơm. '
-                'Popup tắt khi hệ thống về an toàn.',
-                style: NcText.body(size: 12.5, color: nc.whiteDim),
-              ),
-              const SizedBox(height: 10),
-              GlowButton(
-                label: 'Chuyển sang Thủ công',
-                primary: false,
-                icon: Icons.pan_tool_outlined,
-                onPressed: () => s.setMode(DeviceMode.manual),
+                'Đang ở chế độ Tự động — bấm nút trên sẽ tự chuyển sang Thủ công '
+                'để lệnh của bạn có hiệu lực.',
+                style: NcText.body(size: 11.5, color: nc.whiteDim),
               ),
             ],
             const SizedBox(height: 12),
@@ -117,4 +114,11 @@ class DangerAlertDialog extends StatelessWidget {
         icon: icon,
         onPressed: onTap,
       );
+
+  /// Đảm bảo về chế độ Thủ công (để lệnh không bị firmware auto ghi đè) rồi
+  /// bật/tắt thiết bị an toàn.
+  void _apply(AppState s, String key, bool on) {
+    if (!s.controls.isManual) s.setMode(DeviceMode.manual);
+    s.setDevice(key, on);
+  }
 }

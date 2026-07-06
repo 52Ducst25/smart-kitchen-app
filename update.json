@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 10,
-  "latestVersionName": "1.0.9",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.9/smart-kitchen-v1.0.9.apk",
-  "changelog": "- Khi có cháy/sự cố: popup cảnh báo tự hiện, chỉ tắt khi đã hết nguy hiểm (có nút đóng van / bật quạt / bơm).\n- Thông báo đẩy tới điện thoại kể cả khi app đóng (cần bật dịch vụ máy chủ).\n- Cảnh báo khi thiết bị mất kết nối; số liệu cũ được làm mờ.",
+  "latestVersionCode": 11,
+  "latestVersionName": "1.0.10",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.10/smart-kitchen-v1.0.10.apk",
+  "changelog": "- Sửa popup nguy hiểm: cuộn được (không che nút) + luôn có nút Đóng van / Bật quạt / Bật bơm ở cả 2 chế độ.\n- Sửa lỗi báo 'mất kết nối' giả và biểu đồ lẫn dữ liệu mẫu sau khi tắt chế độ Demo.\n- Tối ưu hiệu năng (bớt vẽ lại thừa).",
   "minSupportedVersionCode": 1
 }

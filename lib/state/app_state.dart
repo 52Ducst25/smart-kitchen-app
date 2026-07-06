@@ -29,6 +29,7 @@ class AppState extends ChangeNotifier {
   // cuối nhận dữ liệu cảm biến + nhịp định kỳ để UI tự đánh giá lại.
   DateTime? _lastSensorAt;
   Timer? _offlineTicker;
+  bool _wasOffline = false; // trạng thái offline lần trước (để notify khi đổi)
 
   // Chế độ dữ liệu mẫu (demo overlay): tự sinh số liệu để xem biểu đồ có thông số.
   bool _demoMode = false;
@@ -81,9 +82,14 @@ class AppState extends ChangeNotifier {
       notifyListeners();
     }, onError: _onStreamError));
 
-    // Nhịp 5s để UI tự đánh giá lại offline (offline = VẮNG dữ liệu, không có event).
+    // Nhịp 5s đánh giá lại offline (offline = VẮNG dữ liệu). Chỉ notify khi
+    // trạng thái offline THỰC SỰ đổi → tránh rebuild/repaint thừa mỗi 5s.
     _offlineTicker = Timer.periodic(const Duration(seconds: 5), (_) {
-      if (hasListeners) notifyListeners();
+      final off = isDeviceOffline;
+      if (off != _wasOffline) {
+        _wasOffline = off;
+        if (hasListeners) notifyListeners();
+      }
     });
   }
 
@@ -182,6 +188,10 @@ class AppState extends ChangeNotifier {
   void toggleDemo(bool on) {
     _demoMode = on;
     _demoTimer?.cancel();
+    // Không trộn dữ liệu demo/thật trong lịch sử chart; và reset mốc thời gian
+    // để không báo "offline" giả ngay sau khi tắt demo (demo đóng băng mốc cũ).
+    _history.clear();
+    _lastSensorAt = DateTime.now();
     if (on) {
       if (!_settingsLoaded) {
         _settings = const Settings();
