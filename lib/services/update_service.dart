@@ -64,8 +64,20 @@ class UpdateService {
     return update.updateAvailable ? update : null;
   }
 
+  /// Đã có quyền cài app từ nguồn ngoài chưa? (chỉ đọc trạng thái, KHÔNG mở Settings)
+  Future<bool> hasInstallPermission() =>
+      Permission.requestInstallPackages.isGranted;
+
+  /// Đảm bảo quyền cài (Android 8+): nếu chưa có sẽ MỞ Settings để user bật.
+  /// Trả true nếu đã được cấp; false nếu vừa mở Settings (UI sẽ chờ user quay lại).
+  Future<bool> ensureInstallPermission() async {
+    if (await Permission.requestInstallPackages.isGranted) return true;
+    final res = await Permission.requestInstallPackages.request();
+    return res.isGranted;
+  }
+
   /// Tải APK về thư mục tạm rồi bung trình cài đặt.
-  /// [onProgress] nhận 0..1. Ném lỗi nếu link sai / thiếu quyền / tải hỏng.
+  /// [onProgress] nhận 0..1. GIẢ ĐỊNH quyền cài đã được đảm bảo trước ở UI.
   Future<void> downloadAndInstall(
     String apkUrl, {
     void Function(double progress)? onProgress,
@@ -74,9 +86,8 @@ class UpdateService {
       throw const FormatException('Link APK không hợp lệ (phải là https).');
     }
 
-    // Android 8+: cần quyền cài app từ nguồn ngoài Play Store.
-    final status = await Permission.requestInstallPackages.request();
-    if (!status.isGranted) {
+    // Chốt an toàn: kiểm tra quyền, KHÔNG mở Settings ở đây (tránh lặp).
+    if (!await Permission.requestInstallPackages.isGranted) {
       throw Exception(
         'Cần cấp quyền "Cài ứng dụng không xác định" để cập nhật.',
       );

@@ -31,14 +31,58 @@ class UpdateDialog extends StatefulWidget {
   State<UpdateDialog> createState() => _UpdateDialogState();
 }
 
-class _UpdateDialogState extends State<UpdateDialog> {
+class _UpdateDialogState extends State<UpdateDialog> with WidgetsBindingObserver {
   bool _downloading = false;
+  bool _awaitingPerm = false; // đã mở Settings xin quyền, chờ user bật & quay lại
   double _progress = 0;
   String? _error;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Sau khi user bật quyền trong Settings và quay lại app → TỰ tiếp tục tải &
+    // cài, không bắt bấm "Cập nhật" lần 2 (đây là lý do trước phải bấm 2 lần).
+    if (state == AppLifecycleState.resumed && _awaitingPerm) {
+      widget.service.hasInstallPermission().then((granted) {
+        if (granted && mounted) {
+          _awaitingPerm = false;
+          _download();
+        }
+      });
+    }
+  }
+
   Future<void> _startUpdate() async {
+    setState(() => _error = null);
+    final granted = await widget.service.ensureInstallPermission();
+    if (!granted) {
+      // Đã mở Settings xin quyền → chờ user bật rồi quay lại (app tự tiếp tục).
+      setState(() {
+        _awaitingPerm = true;
+        _downloading = false;
+        _error = 'Hãy bật quyền "Cài ứng dụng không xác định" rồi quay lại — '
+            'app sẽ tự tải & cài, không cần bấm lại.';
+      });
+      return;
+    }
+    await _download();
+  }
+
+  Future<void> _download() async {
     setState(() {
       _downloading = true;
+      _awaitingPerm = false;
       _error = null;
       _progress = 0;
     });

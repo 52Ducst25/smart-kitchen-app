@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 7,
-  "latestVersionName": "1.0.6",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.6/smart-kitchen-v1.0.6.apk",
-  "changelog": "- Nhật ký hoạt động: thêm nút ẩn/hiện.\n- Sửa lỗi nhật ký không cập nhật khi bật/tắt thiết bị ở chế độ Thủ công (nay mỗi thao tác đều ghi 1 dòng).",
+  "latestVersionCode": 8,
+  "latestVersionName": "1.0.7",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.7/smart-kitchen-v1.0.7.apk",
+  "changelog": "- Sửa lỗi phải bấm Cập nhật 2 lần: bật quyền cài xong app tự tiếp tục tải & cài (chỉ 1 lần bấm).",
   "minSupportedVersionCode": 1
 }
