@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/control/control_screen.dart';
 import '../screens/data/data_screen.dart';
 import '../screens/user/user_screen.dart';
 import '../services/update_service.dart';
+import '../state/app_state.dart';
 import '../theme/neon_carbon_colors.dart';
+import '../widgets/danger_alert_dialog.dart';
 import '../widgets/update_dialog.dart';
 
 /// Khung chính: 3 tab Data / Control / User qua NavigationBar dưới đáy.
@@ -19,13 +22,34 @@ class _MainShellState extends State<MainShell> {
   int _index = 0;
   final _updateService = UpdateService();
 
+  AppState? _appState; // giữ ref để gỡ listener khi dispose
+  bool _dangerShown = false; // popup nguy hiểm đang mở?
+
   static const _screens = [DataScreen(), ControlScreen(), UserScreen()];
 
   @override
   void initState() {
     super.initState();
-    // Kiểm tra cập nhật 1 lần khi mở app (sau khi có Navigator).
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForUpdate();
+      // Lắng nghe nguy hiểm → tự bật popup cảnh báo.
+      _appState = context.read<AppState>()..addListener(_onDanger);
+      _onDanger(); // kiểm tra ngay (phòng khi mở app lúc đang nguy hiểm)
+    });
+  }
+
+  @override
+  void dispose() {
+    _appState?.removeListener(_onDanger);
+    super.dispose();
+  }
+
+  /// Có nguy hiểm & popup chưa mở → bật popup sticky (tự đóng khi hết nguy hiểm).
+  void _onDanger() {
+    if (!mounted || _dangerShown) return;
+    if (_appState?.isDanger != true) return;
+    _dangerShown = true;
+    DangerAlertDialog.show(context).then((_) => _dangerShown = false);
   }
 
   Future<void> _checkForUpdate() async {

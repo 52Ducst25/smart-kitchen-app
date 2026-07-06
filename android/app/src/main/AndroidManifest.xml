@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Cài APK cập nhật tải từ GitHub Releases (Android 8+). -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <!-- Hiện thông báo cảnh báo an toàn (Android 13+). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:label="Smart Kitchen"
@@ -31,6 +33,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Kênh mặc định cho FCM khi app ở nền (khớp kênh tạo trong app). -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="safety_alerts" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

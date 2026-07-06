@@ -25,6 +25,11 @@ class AppState extends ChangeNotifier {
   List<LogEntry> _logs = const [];
   bool _settingsLoaded = false; // đã nhận ngưỡng thật lần đầu chưa
 
+  // Phát hiện OFFLINE kiểu client-side (chưa cần firmware ghi status): mốc lần
+  // cuối nhận dữ liệu cảm biến + nhịp định kỳ để UI tự đánh giá lại.
+  DateTime? _lastSensorAt;
+  Timer? _offlineTicker;
+
   // Chế độ dữ liệu mẫu (demo overlay): tự sinh số liệu để xem biểu đồ có thông số.
   bool _demoMode = false;
   Timer? _demoTimer;
@@ -43,11 +48,19 @@ class AppState extends ChangeNotifier {
   bool get demoMode => _demoMode;
   List<SensorData> get history => _history.toList(growable: false);
 
+  /// Thiết bị coi như OFFLINE nếu >15s không có dữ liệu cảm biến mới (chỉ khi
+  /// dùng nguồn thật). null = đang kết nối lần đầu → chưa coi là offline.
+  bool get isDeviceOffline {
+    if (isDemo || _demoMode || _lastSensorAt == null) return false;
+    return DateTime.now().difference(_lastSensorAt!).inSeconds > 15;
+  }
+
   /// Bắt đầu lắng nghe các luồng dữ liệu.
   void start() {
     _subs.add(_source.sensors.listen((s) {
       if (_demoMode) return; // demo overlay đang chiếm quyền hiển thị
       _sensors = s;
+      _lastSensorAt = DateTime.now();
       _history.addLast(s);
       while (_history.length > _historyMax) {
         _history.removeFirst();
@@ -67,6 +80,11 @@ class AppState extends ChangeNotifier {
       _logs = l;
       notifyListeners();
     }, onError: _onStreamError));
+
+    // Nhịp 5s để UI tự đánh giá lại offline (offline = VẮNG dữ liệu, không có event).
+    _offlineTicker = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (hasListeners) notifyListeners();
+    });
   }
 
   void _onStreamError(Object e, StackTrace st) =>
@@ -196,6 +214,7 @@ class AppState extends ChangeNotifier {
   @override
   void dispose() {
     _demoTimer?.cancel();
+    _offlineTicker?.cancel();
     for (final s in _subs) {
       s.cancel();
     }

@@ -6,6 +6,7 @@ import '../../state/app_state.dart';
 import '../../theme/neon_carbon_colors.dart';
 import '../../theme/neon_carbon_theme.dart';
 import '../../widgets/hud_header.dart';
+import '../../widgets/offline_banner.dart';
 import '../../widgets/section_label.dart';
 import 'danger_banner.dart';
 import 'log_list.dart';
@@ -46,6 +47,10 @@ class _DataScreenState extends State<DataScreen> {
           DangerBanner(alerts: s.activeAlerts),
           const SizedBox(height: 16),
         ],
+        if (s.isDeviceOffline) ...[
+          const OfflineBanner(),
+          const SizedBox(height: 16),
+        ],
         Row(
           children: [
             const Expanded(
@@ -59,13 +64,16 @@ class _DataScreenState extends State<DataScreen> {
           ],
         ),
         const SizedBox(height: 10),
-        SensorGrid(
-          data: s.sensors,
-          settings: s.settings,
-          selected: selected,
-          // Chạm lại thẻ đang chọn → bỏ chọn (ẩn biểu đồ).
-          onSelect: (m) =>
-              setState(() => _selected = _selected == m ? null : m),
+        Opacity(
+          opacity: s.isDeviceOffline ? 0.5 : 1, // làm mờ số cũ khi offline
+          child: SensorGrid(
+            data: s.sensors,
+            settings: s.settings,
+            selected: selected,
+            // Chạm lại thẻ đang chọn → bỏ chọn (ẩn biểu đồ).
+            onSelect: (m) =>
+                setState(() => _selected = _selected == m ? null : m),
+          ),
         ),
         const SizedBox(height: 20),
         if (selected != null) ...[
