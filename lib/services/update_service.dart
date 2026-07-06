@@ -10,14 +10,17 @@ import '../models/app_update_info.dart';
 
 // ============================================================================
 // CẤU HÌNH NGUỒN CẬP NHẬT — sửa 3 hằng dưới sau khi tạo repo GitHub riêng.
-// URL raw: https://raw.githubusercontent.com/<owner>/<repo>/<branch>/update.json
+// Đọc update.json qua GitHub Contents API (media type raw) thay vì
+// raw.githubusercontent.com: raw có cache CDN 5 phút và BỎ QUA query chống cache
+// (?t=) → cập nhật bị trễ tới 5 phút sau mỗi release. API trả nội dung mới gần
+// như tức thì (giới hạn ~60 lần/giờ/IP, đủ cho app kiểm tra lúc mở/bấm nút).
 // ============================================================================
 const _owner = '52Ducst25'; // owner GitHub
 const _repo = 'smart-kitchen-app'; // repo riêng cho app-flutter
 const _branch = 'main'; // nhánh chứa update.json
 
 String get _updateJsonUrl =>
-    'https://raw.githubusercontent.com/$_owner/$_repo/$_branch/update.json';
+    'https://api.github.com/repos/$_owner/$_repo/contents/update.json?ref=$_branch';
 
 /// Dịch vụ cập nhật OTA (Android): đọc `update.json` qua HTTP, so versionCode;
 /// nếu có bản mới → UI gọi [downloadAndInstall] tải APK từ GitHub Releases và
@@ -34,13 +37,18 @@ class UpdateService {
     final info = await PackageInfo.fromPlatform();
     final currentCode = int.tryParse(info.buildNumber) ?? 0;
 
-    // Chống cache CDN raw.githubusercontent (~5 phút). Ép nhận CHUỖI thô rồi tự
-    // jsonDecode: GitHub raw trả Content-Type "text/plain" nên dio không tự
-    // decode JSON theo content-type đó (đây từng là lỗi khiến không hiện popup).
-    final cacheBust = DateTime.now().millisecondsSinceEpoch;
+    // Contents API + Accept "raw" → trả thẳng nội dung file, mới gần như tức thì.
+    // Ép nhận CHUỖI thô rồi tự jsonDecode (không phụ thuộc content-type trả về).
+    // GitHub API bắt buộc có User-Agent, nếu thiếu sẽ trả 403.
     final res = await _dio.get<String>(
-      '$_updateJsonUrl?t=$cacheBust',
-      options: Options(responseType: ResponseType.plain),
+      _updateJsonUrl,
+      options: Options(
+        responseType: ResponseType.plain,
+        headers: const {
+          'Accept': 'application/vnd.github.raw',
+          'User-Agent': 'SmartKitchenApp',
+        },
+      ),
     );
 
     final decoded = jsonDecode(res.data ?? '');
