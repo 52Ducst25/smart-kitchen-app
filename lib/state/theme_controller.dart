@@ -25,8 +25,10 @@ class ThemeController extends ChangeNotifier {
         return ThemeMode.light;
       case 'dark':
         return ThemeMode.dark;
+      case 'system':
+        return ThemeMode.system; // user chọn Tự động → giữ Tự động
       default:
-        return ThemeMode.system; // mặc định: theo hệ thống
+        return ThemeMode.light; // mặc định lần đầu (chưa chọn) = Sáng
     }
   }
 }
