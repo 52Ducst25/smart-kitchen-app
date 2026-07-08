@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 15,
-  "latestVersionName": "1.0.14",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.14/smart-kitchen-v1.0.14.apk",
-  "changelog": "- Chạm vào một chấm trên biểu đồ để xem giá trị của điểm đó và thời điểm gửi mẫu.\n- Áp dụng cho cả tab DATA lẫn tab LỊCH SỬ; chạm vùng trống để bỏ chọn.\n- Cảm biến vẫn gửi liên tục 2 giây/lần như cũ.",
+  "latestVersionCode": 16,
+  "latestVersionName": "1.0.15",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.15/smart-kitchen-v1.0.15.apk",
+  "changelog": "- Cài đặt Ngưỡng cảnh báo chuyển sang tab ĐIỀU KHIỂN, dạng thu gọn — chạm để mở.\n- Tab Cài đặt chỉ còn Giao diện, Cập nhật và Thông tin kết nối.\n- Cảm biến MQ đã hiệu chuẩn lại: gas/khói hiển thị ppm đúng.\n- Chạm vào một chấm trên biểu đồ để xem giá trị và thời điểm gửi.",
   "minSupportedVersionCode": 1
 }
