@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 18,
-  "latestVersionName": "1.0.17",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.17/smart-kitchen-v1.0.17.apk",
-  "changelog": "- Đồng hồ an toàn đổi sang kiểu vòng tròn gradient, hiển thị gọn trong khung.\n- Màu vòng theo mức an toàn: xanh (an toàn) / vàng (chú ý) / đỏ (nguy hiểm).",
+  "latestVersionCode": 19,
+  "latestVersionName": "1.0.18",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.18/smart-kitchen-v1.0.18.apk",
+  "changelog": "- Đồng hồ an toàn đổi màu theo phổ liên tục: xanh (an toàn) → vàng (chú ý) → đỏ (nguy hiểm nhất).",
   "minSupportedVersionCode": 1
 }
