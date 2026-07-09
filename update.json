@@ -1,7 +1,7 @@
 {
-  "latestVersionCode": 19,
-  "latestVersionName": "1.0.18",
-  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.18/smart-kitchen-v1.0.18.apk",
-  "changelog": "- Đồng hồ an toàn đổi màu theo phổ liên tục: xanh (an toàn) → vàng (chú ý) → đỏ (nguy hiểm nhất).",
+  "latestVersionCode": 20,
+  "latestVersionName": "1.0.19",
+  "apkUrl": "https://github.com/52Ducst25/smart-kitchen-app/releases/download/v1.0.19/smart-kitchen-v1.0.19.apk",
+  "changelog": "- Cảm biến lửa chuyển sang đọc analog: ngưỡng chỉnh được + chống báo cháy giả (debounce).\n- Báo \"LỖI\" khi cảm biến lửa đứt dây, thay vì im lặng coi là an toàn.\n- Hiển thị lửa vẫn là CÓ / KHÔNG như cũ.",
   "minSupportedVersionCode": 1
 }
